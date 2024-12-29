@@ -1121,7 +1121,6 @@ end
 --- Initialize the sidebar instance.
 --- @return avante.Sidebar The Sidebar instance.
 function Sidebar:initialize()
-  print("Sidebar initializing...")
   self.code.winid = api.nvim_get_current_win()
   self.code.bufnr = api.nvim_get_current_buf()
   self.code.selection = Utils.get_visual_selection_and_range()
@@ -1137,13 +1136,11 @@ function Sidebar:initialize()
   local frontier_bufnr = vim.fn.bufnr(frontier_bufname)
 
   if frontier_bufnr ~= -1 then
-    print("Adding selected files and ranges")
     local lines = api.nvim_buf_get_lines(frontier_bufnr, 0, -1, false)
     for _, line in ipairs(lines) do
       -- Extract path and range if exists (format: path:start-end)
       local path, range = line:match("^([^:]+):?(.*)$")
       if path and path ~= "" then
-        print("Adding non-empty path: ", path)
         self.file_selector:add_selected_file(path)
         -- If range exists and matches the format "number-number"
         if range and range:match("^%d+%-%d+$") then
@@ -1153,12 +1150,7 @@ function Sidebar:initialize()
         end
       end
     end
-    print("Files and ranges added.")
   end
-  print("selected filepaths is: ", self.file_selector:get_selected_filepaths())
-  vim.print(self.file_selector:get_selected_filepaths())
-  print("Sidebar initialized.")
-  print("\n")
 
   return self
 end
@@ -2050,9 +2042,7 @@ function Sidebar:render(opts)
 
   self:create_input_container(opts)
 
-  print("Creating selected files container...")
   self:create_selected_files_container()
-  print("Selected files container created.")
 
   self:update_content_with_history(chat_history)
 
@@ -2072,15 +2062,11 @@ function Sidebar:create_selected_files_container()
   if self.selected_files_container then self.selected_files_container:unmount() end
 
   local selected_filepaths = self.file_selector:get_selected_filepaths()
-  print("When creating selected files container, before off-on, selected_filepaths is:", selected_filepaths)
-  vim.print(selected_filepaths)
   if #selected_filepaths == 0 then
     self.file_selector:off("update")
     self.file_selector:on("update", function() self:create_selected_files_container() end)
     return
   end
-  print("When creating selected files container, after off-on, selected_filepaths is:", selected_filepaths)
-  vim.print(selected_filepaths)
 
   self.selected_files_container = Split({
     enter = false,
@@ -2109,8 +2095,6 @@ function Sidebar:create_selected_files_container()
 
   local render = function()
     local selected_filepaths_ = self.file_selector:get_selected_filepaths()
-    print("When render files container, filepaths are: ", selected_filepaths)
-    vim.print(selected_filepaths)
 
     if #selected_filepaths_ == 0 then
       self.selected_files_container:unmount()
