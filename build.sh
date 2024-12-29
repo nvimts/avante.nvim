@@ -51,7 +51,7 @@ LUA_VERSION="${LUA_VERSION:-luajit}"
 ARTIFACT_NAME_PATTERN="avante_lib-$PLATFORM-$ARCH-$LUA_VERSION"
 
 # Get the artifact download URL
-ARTIFACT_URL=$(curl -s "https://api.github.com/repos/yetone/avante.nvim/releases/latest" | grep "browser_download_url" | cut -d '"' -f 4 | grep $ARTIFACT_NAME_PATTERN)
+ARTIFACT_URL=$(curl -s -H "Authorization: Bearer $GITHUB_PAT" -H "Accept: application/vnd.github.v3+json" "https://api.github.com/repos/yetone/avante.nvim/releases/latest" | grep "browser_download_url" | cut -d '"' -f 4 | grep $ARTIFACT_NAME_PATTERN)
 
 set -x
 
