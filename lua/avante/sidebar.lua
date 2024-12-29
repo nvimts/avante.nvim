@@ -1128,7 +1128,21 @@ function Sidebar:initialize()
   if not self.code.bufnr or not api.nvim_buf_is_valid(self.code.bufnr) then return self end
 
   self.file_selector:reset()
-  self.file_selector:add_selected_file(Utils.relative_path(api.nvim_buf_get_name(self.code.bufnr)))
+  -- Add current buffer file
+  -- self.file_selector:add_selected_file(Utils.relative_path(api.nvim_buf_get_name(self.code.bufnr)))
+
+  -- Read from .frontier: buffer and add all files
+  local frontier_bufname = ".frontier:" .. vim.fn.getcwd()
+  local frontier_bufnr = vim.fn.bufnr(frontier_bufname)
+
+  if frontier_bufnr ~= -1 then
+    local lines = api.nvim_buf_get_lines(frontier_bufnr, 0, -1, false)
+    for _, line in ipairs(lines) do
+      -- Extract just the path part before any colon
+      local path = line:match("^[^:]+")
+      if path and path ~= "" then self.file_selector:add_selected_file(path) end
+    end
+  end
 
   return self
 end
