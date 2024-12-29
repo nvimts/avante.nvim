@@ -1133,7 +1133,19 @@ function Sidebar:initialize()
   -- self.file_selector:add_selected_file(Utils.relative_path(api.nvim_buf_get_name(self.code.bufnr)))
 
   -- Read from .frontier: buffer and add all files
-  local frontier_bufname = ".frontier:" .. vim.fn.getcwd()
+  local function get_frontier_file()
+    local cwd = vim.fn.getcwd()
+    local cwd_hash = vim.fn.sha256(cwd)
+    local cache_dir = vim.fn.stdpath("data") .. "/frontier"
+
+    -- Create cache directory if it doesn't exist
+    if vim.fn.isdirectory(cache_dir) == 0 then vim.fn.mkdir(cache_dir, "p") end
+
+    return cache_dir .. "/" .. cwd_hash
+  end
+  -- local frontier_bufname = ".frontier:" .. vim.fn.getcwd()
+  local frontier_bufname = get_frontier_file()
+  print("frontier_bufname is: ", frontier_bufname)
   local frontier_bufnr = vim.fn.bufnr(frontier_bufname)
 
   if frontier_bufnr ~= -1 then
