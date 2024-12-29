@@ -2046,7 +2046,9 @@ function Sidebar:render(opts)
 
   self:create_input_container(opts)
 
+  print("Creating selected files container...")
   self:create_selected_files_container()
+  print("Selected files container created.")
 
   self:update_content_with_history(chat_history)
 
@@ -2066,11 +2068,13 @@ function Sidebar:create_selected_files_container()
   if self.selected_files_container then self.selected_files_container:unmount() end
 
   local selected_filepaths = self.file_selector:get_selected_filepaths()
+  print("When creating selected files container, before off-on, selected_filepaths is:", selected_filepaths)
   if #selected_filepaths == 0 then
     self.file_selector:off("update")
     self.file_selector:on("update", function() self:create_selected_files_container() end)
     return
   end
+  print("When creating selected files container, after off-on, selected_filepaths is:", selected_filepaths)
 
   self.selected_files_container = Split({
     enter = false,
@@ -2099,6 +2103,7 @@ function Sidebar:create_selected_files_container()
 
   local render = function()
     local selected_filepaths_ = self.file_selector:get_selected_filepaths()
+    print("When render files container, filepaths are: ", selected_filepaths)
 
     if #selected_filepaths_ == 0 then
       self.selected_files_container:unmount()
