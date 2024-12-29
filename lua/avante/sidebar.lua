@@ -1154,7 +1154,9 @@ function Sidebar:initialize()
     end
   end
   print("Files and ranges added.")
+  print("selected filepaths is: ", self.file_selector:get_selected_filepaths())
   print("Sidebar initialized.")
+  print()
 
   return self
 end
