@@ -19,11 +19,11 @@ local Highlights = {
 
 Highlights.conflict = {
   CURRENT = { name = "AvanteConflictCurrent", bg = 4218238, bold = true }, -- #405d7e
-  CURRENT_LABEL = { name = "AvanteConflictCurrentLabel", link = "CURRENT", shade = 60 },
+  CURRENT_LABEL = { name = "AvanteConflictCurrentLabel", link = "CURRENT", shade = 0 },
   INCOMING = { name = "AvanteConflictIncoming", bg = 3229523, bold = true }, -- #314753
-  INCOMING_LABEL = { name = "AvanteConflictIncomingLabel", link = "INCOMING", shade = 60 },
+  INCOMING_LABEL = { name = "AvanteConflictIncomingLabel", link = "INCOMING", shade = 0 },
   ANCESTOR = { name = "AvanteConflictAncestor", bg = 6824314, bold = true }, -- #68217A
-  ANCESTOR_LABEL = { name = "AvanteConflictAncestorLabel", link = "ANCESTOR", shade = 60 },
+  ANCESTOR_LABEL = { name = "AvanteConflictAncestorLabel", link = "ANCESTOR", shade = 0 },
 }
 
 --- helper
