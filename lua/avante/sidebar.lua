@@ -1136,13 +1136,14 @@ function Sidebar:initialize()
   local frontier_bufname = ".frontier:" .. vim.fn.getcwd()
   local frontier_bufnr = vim.fn.bufnr(frontier_bufname)
 
-  print("Adding selected files and ranges")
   if frontier_bufnr ~= -1 then
+    print("Adding selected files and ranges")
     local lines = api.nvim_buf_get_lines(frontier_bufnr, 0, -1, false)
     for _, line in ipairs(lines) do
       -- Extract path and range if exists (format: path:start-end)
       local path, range = line:match("^([^:]+):?(.*)$")
       if path and path ~= "" then
+        print("Adding non-empty path: ", path)
         self.file_selector:add_selected_file(path)
         -- If range exists and matches the format "number-number"
         if range and range:match("^%d+%-%d+$") then
@@ -1152,8 +1153,8 @@ function Sidebar:initialize()
         end
       end
     end
+    print("Files and ranges added.")
   end
-  print("Files and ranges added.")
   print("selected filepaths is: ", self.file_selector:get_selected_filepaths())
   vim.print(self.file_selector:get_selected_filepaths())
   print("Sidebar initialized.")
