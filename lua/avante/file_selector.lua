@@ -23,6 +23,8 @@ function FileSelector:new(id)
   return setmetatable({
     id = id,
     selected_files = {},
+    selected_filepaths = {},
+    selected_file_ranges = {},
     file_cache = {},
     event_handlers = {},
   }, { __index = self })
@@ -68,10 +70,13 @@ function FileSelector:add_selected_file_ranges(filepath, file_range)
     end
 
     if not exists then
-      print(uniform_path, file_range)
       table.insert(self.selected_file_ranges[uniform_path], file_range)
       self:emit("update")
     end
+  else
+    -- add range "" to indicate all file is selected
+    table.insert(self.selected_file_ranges[uniform_path], file_range)
+    self:emit("update")
   end
 
   -- Although it is assumed filepath is added to selected_filepaths,
@@ -292,13 +297,46 @@ function FileSelector:get_selected_files_contents()
   for _, file_path in ipairs(self.selected_filepaths) do
     local file = io.open(file_path, "r")
     if file then
-      local content = file:read("*all")
+      local all_lines = {}
+      for line in file:lines() do
+        table.insert(all_lines, line)
+      end
       file:close()
 
       -- Detect the file type
-      local filetype = vim.filetype.match({ filename = file_path, contents = contents }) or "unknown"
+      local filetype = vim.filetype.match({ filename = file_path }) or "unknown"
 
-      table.insert(contents, { path = file_path, content = content, file_type = filetype })
+      -- Get the ranges for this file
+      local ranges = self.selected_file_ranges[file_path] or {""}
+
+      -- If ranges is {""}, include the entire file
+      if #ranges == 1 and ranges[1] == "" then
+        table.insert(contents, {
+          path = file_path,
+          content = table.concat(all_lines, "\n"),
+          file_type = filetype,
+        })
+      else
+        -- Extract the lines for each range
+        local selected_lines = {}
+        for _, range in ipairs(ranges) do
+          local start_line, end_line = range:match("^(%d+)%-(%d+)$")
+          if start_line and end_line then
+            start_line = tonumber(start_line)
+            end_line = tonumber(end_line)
+            for i = start_line, end_line do
+              if all_lines[i] then
+                table.insert(selected_lines, all_lines[i])
+              end
+            end
+          end
+        end
+        table.insert(contents, {
+          path = file_path,
+          content = table.concat(selected_lines, "\n"),
+          file_type = filetype,
+        })
+      end
     end
   end
   return contents
@@ -317,5 +355,22 @@ function FileSelector:add_quickfix_files()
     self:add_selected_file(filepath)
   end
 end
+
+-- local function test_add_get()
+--   local filepath_test = "lua/avante/range.lua"
+--   local filepath_test2 = "lua/avante/health.lua"
+--   local file_range1 = "1-2"
+--   local file_range2 = "4-4"
+--   local file_selector = FileSelector:new(1)
+--   file_selector:reset()
+--   file_selector:add_selected_file(filepath_test)
+--   file_selector:add_selected_file_ranges(filepath_test, file_range1)
+--   file_selector:add_selected_file_ranges(filepath_test, file_range2)
+--   file_selector:add_selected_file(filepath_test2)
+--   file_selector:add_selected_file_ranges(filepath_test2, "")
+--   vim.print(file_selector:get_selected_files_contents())
+-- end
+
+-- test_add_get()
 
 return FileSelector
