@@ -1121,6 +1121,7 @@ end
 --- Initialize the sidebar instance.
 --- @return avante.Sidebar The Sidebar instance.
 function Sidebar:initialize()
+  print("Sidebar initializing...")
   self.code.winid = api.nvim_get_current_win()
   self.code.bufnr = api.nvim_get_current_buf()
   self.code.selection = Utils.get_visual_selection_and_range()
@@ -1135,6 +1136,7 @@ function Sidebar:initialize()
   local frontier_bufname = ".frontier:" .. vim.fn.getcwd()
   local frontier_bufnr = vim.fn.bufnr(frontier_bufname)
 
+  print("Adding selected files and ranges")
   if frontier_bufnr ~= -1 then
     local lines = api.nvim_buf_get_lines(frontier_bufnr, 0, -1, false)
     for _, line in ipairs(lines) do
@@ -1151,6 +1153,8 @@ function Sidebar:initialize()
       end
     end
   end
+  print("Files and ranges added.")
+  print("Sidebar initialized.")
 
   return self
 end
