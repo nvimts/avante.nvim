@@ -11,6 +11,7 @@ local FileSelector = {}
 --- @class FileSelector
 --- @field id integer
 --- @field selected_filepaths string[]
+--- @field selected_file_ranges table<string, string[]>  -- map filepath to it ranges
 --- @field file_cache string[]
 --- @field event_handlers table<string, function[]>
 
@@ -29,6 +30,7 @@ end
 
 function FileSelector:reset()
   self.selected_filepaths = {}
+  self.selected_file_ranges = {}
   self.event_handlers = {}
 end
 
@@ -37,6 +39,43 @@ function FileSelector:add_selected_file(filepath)
 
   local uniform_path = Utils.uniform_path(filepath)
   -- Avoid duplicates
+  if not vim.tbl_contains(self.selected_filepaths, uniform_path) then
+    table.insert(self.selected_filepaths, uniform_path)
+    self:emit("update")
+  end
+end
+
+--- Add a file with specific line ranges
+--- @param filepath string The file path
+--- @param file_range string The line range in format "start_line-end_line" or empty string
+function FileSelector:add_selected_file_ranges(filepath, file_range)
+  if not filepath or filepath == "" then return end
+
+  local uniform_path = Utils.uniform_path(filepath)
+
+  -- Initialize ranges table if not exists
+  if not self.selected_file_ranges[uniform_path] then self.selected_file_ranges[uniform_path] = {} end
+
+  -- Add range if it's not empty and not already exists
+  if file_range ~= "" then
+    -- Check if range already exists
+    local exists = false
+    for _, existing_range in ipairs(self.selected_file_ranges[uniform_path]) do
+      if existing_range == file_range then
+        exists = true
+        break
+      end
+    end
+
+    if not exists then
+      print(uniform_path, file_range)
+      table.insert(self.selected_file_ranges[uniform_path], file_range)
+      self:emit("update")
+    end
+  end
+
+  -- Although it is assumed filepath is added to selected_filepaths,
+  -- add filepath if not already in selected_filepaths
   if not vim.tbl_contains(self.selected_filepaths, uniform_path) then
     table.insert(self.selected_filepaths, uniform_path)
     self:emit("update")

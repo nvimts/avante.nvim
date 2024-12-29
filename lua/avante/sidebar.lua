@@ -1138,9 +1138,17 @@ function Sidebar:initialize()
   if frontier_bufnr ~= -1 then
     local lines = api.nvim_buf_get_lines(frontier_bufnr, 0, -1, false)
     for _, line in ipairs(lines) do
-      -- Extract just the path part before any colon
-      local path = line:match("^[^:]+")
-      if path and path ~= "" then self.file_selector:add_selected_file(path) end
+      -- Extract path and range if exists (format: path:start-end)
+      local path, range = line:match("^([^:]+):?(.*)$")
+      if path and path ~= "" then
+        self.file_selector:add_selected_file(path)
+        -- If range exists and matches the format "number-number"
+        if range and range:match("^%d+%-%d+$") then
+          self.file_selector:add_selected_file_ranges(path, range)
+        else
+          self.file_selector:add_selected_file_ranges(path, "")
+        end
+      end
     end
   end
 
