@@ -309,8 +309,8 @@ function FileSelector:get_selected_files_contents()
       -- Get the ranges for this file
       local ranges = self.selected_file_ranges[file_path] or {""}
 
-      -- If ranges is {""}, include the entire file
-      if #ranges == 1 and ranges[1] == "" then
+      -- If ranges contains "", include the entire file
+      if vim.tbl_contains(ranges, "") then
         table.insert(contents, {
           path = file_path,
           content = table.concat(all_lines, "\n"),
