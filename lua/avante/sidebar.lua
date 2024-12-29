@@ -1155,8 +1155,9 @@ function Sidebar:initialize()
   end
   print("Files and ranges added.")
   print("selected filepaths is: ", self.file_selector:get_selected_filepaths())
+  vim.print(self.file_selector:get_selected_filepaths())
   print("Sidebar initialized.")
-  print()
+  print("\n")
 
   return self
 end
@@ -2071,12 +2072,14 @@ function Sidebar:create_selected_files_container()
 
   local selected_filepaths = self.file_selector:get_selected_filepaths()
   print("When creating selected files container, before off-on, selected_filepaths is:", selected_filepaths)
+  vim.print(selected_filepaths)
   if #selected_filepaths == 0 then
     self.file_selector:off("update")
     self.file_selector:on("update", function() self:create_selected_files_container() end)
     return
   end
   print("When creating selected files container, after off-on, selected_filepaths is:", selected_filepaths)
+  vim.print(selected_filepaths)
 
   self.selected_files_container = Split({
     enter = false,
@@ -2106,6 +2109,7 @@ function Sidebar:create_selected_files_container()
   local render = function()
     local selected_filepaths_ = self.file_selector:get_selected_filepaths()
     print("When render files container, filepaths are: ", selected_filepaths)
+    vim.print(selected_filepaths)
 
     if #selected_filepaths_ == 0 then
       self.selected_files_container:unmount()
